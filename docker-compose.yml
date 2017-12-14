@@ -1,0 +1,27 @@
+version: '2'
+services:
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    user: jenkins
+    volumes:
+      - /var/lib/jenkins:/var/lib/jenkins
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      JENKINS_HOST_HOME: "/var/lib/jenkins"
+      JENKINS_OPTS: "--webroot=/var/cache/$NAME/war --httpPort=$HTTP_PORT --httpListenAddress=127.0.0.1"
+    ports:
+      - "8080:8080"
+      - "5000:5000"
+      - "50000:50000"
+
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    volumes:
+      - certs:/etc/letsencrypt
+      - certs-data:/data/letsencrypt
+    ports:
+      - 80:80
+      - 443:443 
