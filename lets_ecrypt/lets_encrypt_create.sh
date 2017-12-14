@@ -1,6 +1,6 @@
 #!/bin/bash
 
-domain=unode
+domain=radziuk.com
 
 docker run -it --rm \
       -v certs:/etc/letsencrypt \
@@ -8,5 +8,5 @@ docker run -it --rm \
       deliverous/certbot \
       certonly \
       --webroot --webroot-path=/data/letsencrypt \
-      -d $domain -d www.$domain
+      -d $domain #-d www.$domain
 

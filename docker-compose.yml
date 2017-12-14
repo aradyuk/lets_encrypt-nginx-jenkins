@@ -4,24 +4,43 @@ services:
   jenkins:
     image: jenkins/jenkins:lts
     container_name: jenkins
-    user: jenkins
+    user: root #jenkins
     volumes:
-      - /var/lib/jenkins:/var/lib/jenkins
+      - /var/lib/jenkins:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      JENKINS_HOST_HOME: "/var/lib/jenkins"
-      JENKINS_OPTS: "--webroot=/var/cache/$NAME/war --httpPort=$HTTP_PORT --httpListenAddress=127.0.0.1"
+    - JENKINS_HOME=/var/jenkins_home
+    - JENKINS_JAVA_OPTIONS="-Djava.awt.headless=true -Djava.io.tmpdir=/var/jenkins_home/tmp"
+    - TMP=/var/jenkins_home/tmp
+    - TEMP=/var/jenkins_home/tmp
+    - TMPDIR=/var/jenkins_home/tmp
+    - JENKINS_OPTS="--webroot=/var/cache/$NAME/war --httpPort=$HTTP_PORT --httpListenAddress=127.0.0.1"
     ports:
       - "8080:8080"
       - "5000:5000"
       - "50000:50000"
-
+   
   nginx:
-    build: ./nginx
+    image: nginx:latest
     container_name: nginx
     volumes:
-      - certs:/etc/letsencrypt
-      - certs-data:/data/letsencrypt
+      - ./jenkins.conf:/etc/nginx/conf.d/jenkins.conf:ro
+      - ./self_signed/certs/cert.crt:/cert.crt
+      - ./self_signed/certs/key.key:/key.key
+#      - certs:/etc/letsencrypt
+#      - certs-data:/data/letsencrypt
     ports:
       - 80:80
       - 443:443 
+    depends_on: 
+      - jenkins
+    links: 
+      - jenkins
+    command: /bin/bash -c "rm -rf /etc/nginx/conf.d/default && nginx -g 'daemon off;'"
+
+#volumes:
+#  certs:
+#    external: true 
+#  certs-data:
+#    external: true 
+
