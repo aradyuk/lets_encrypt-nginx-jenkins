@@ -18,15 +18,16 @@ services:
     ports:
       - "8080:8080"
       - "5000:5000"
-      - "50000:50000"
-   
+      - "50000:50000"    
+ 
   nginx:
     image: nginx:latest
     container_name: nginx
     volumes:
-      - ./jenkins.conf:/etc/nginx/conf.d/jenkins.conf:ro
-      - ./self_signed/certs/cert.crt:/cert.crt
-      - ./self_signed/certs/key.key:/key.key
+      - ./nginx/jenkins.conf:/etc/nginx/conf.d/jenkins.conf:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./self_signed/certs/cert.crt:/cert.crt:ro
+      - ./self_signed/certs/key.key:/key.key:ro
 #      - certs:/etc/letsencrypt
 #      - certs-data:/data/letsencrypt
     ports:
@@ -36,7 +37,7 @@ services:
       - jenkins
     links: 
       - jenkins
-    command: /bin/bash -c "rm -rf /etc/nginx/conf.d/default && nginx -g 'daemon off;'"
+    command: /bin/bash -c "rm -rf /etc/nginx/conf.d/default* && nginx -g 'daemon off;'"
 
 #volumes:
 #  certs:
