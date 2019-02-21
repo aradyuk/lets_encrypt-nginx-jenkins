@@ -1,5 +1,7 @@
 #!/bin/bash
 
+./img_build.sh
+
 if [ ! -d "/var/lib/jenkins" ]; then
   mkdir /var/lib/jenkins
 fi
